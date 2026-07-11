@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Grant Tracker", layout="wide", page_icon=None)
+st.set_page_config(page_title="Grant Database Visualization", layout="wide", page_icon=None)
 
 DATE_COLS = ["Submission Date", "Decision Date", "Project Start Date", "Project End Date", "Closure Date"]
 NUMERIC_COLS = ["Review Score", "Amount Requested", "Amount Approved",
@@ -97,7 +97,7 @@ def has(data, col):
 st.sidebar.header("Data file")
 uploaded = st.sidebar.file_uploader("Upload your Excel file", type=["xlsx", "xls"])
 
-st.title("Grant Tracker Dashboard")
+st.title("Research Grants Dashboard")
 
 if uploaded is None:
     st.info("Upload your Excel file from the sidebar to get started.")
