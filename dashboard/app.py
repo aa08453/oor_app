@@ -29,7 +29,7 @@ def load_data(file_bytes):
     if missing:
         raise ValueError(f"Missing expected column(s): {', '.join(missing)}")
     for c in DATE_COLS:
-        df[c] = pd.to_datetime(df[c], errors="coerce").dt.date
+        df[c] = pd.to_datetime(df[c], errors="coerce")
     return df
 
 # ──────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ def load_data(file_bytes):
 st.sidebar.header("Data file")
 uploaded = st.sidebar.file_uploader("Upload your Excel file", type=["xlsx", "xls"])
 
-st.title("Grants Visualization Dashboard")
+st.title("Grant Tracker Dashboard")
 
 if uploaded is None:
     st.info("Upload your Excel file from the sidebar to get started.")
@@ -56,7 +56,7 @@ except Exception as e:
 # ──────────────────────────────────────────────────────────────
 # SORT / FILTER CONTROLS
 # ──────────────────────────────────────────────────────────────
-st.sidebar.header("Filter & sort")
+st.sidebar.header("🔎 Filter & sort")
 years = ["All"] + sorted(df["Cycle/Year"].dropna().unique().tolist())
 depts = ["All"] + sorted(df["Department"].dropna().unique().tolist())
 statuses_present = ["All"] + sorted(df["Project Status"].dropna().unique().tolist())
@@ -80,6 +80,11 @@ filtered = filtered.sort_values(by=sort_by, ascending=(sort_dir == "Ascending"))
 # ──────────────────────────────────────────────────────────────
 # STATS — recompute on filtered set
 # ──────────────────────────────────────────────────────────────
+def fmt_date(value):
+    if pd.isna(value):
+        return "—"
+    return value.strftime("%Y-%m-%d")
+
 STAT_CARD_CSS = """
 <style>
 .stat-grid {
@@ -217,15 +222,15 @@ def render_detail(data, s_no):
         c1.write(f"**Review Score:** {row['Review Score']}")
         c1.write(f"**Recommendation:** {row['Recommendation']}")
         c2.write(f"**Decision:** {row['Decision']}")
-        c2.write(f"**Decision Date:** {row['Decision Date']}")
+        c2.write(f"**Decision Date:** {fmt_date(row['Decision Date'])}")
         c2.write(f"**Eligibility Confirmed:** {row['Eligibility Confirmed']}")
 
     with tab2:
         c1, c2 = st.columns(2)
-        c1.write(f"**Submission Date:** {row['Submission Date']}")
-        c1.write(f"**Project Start Date:** {row['Project Start Date']}")
-        c1.write(f"**Project End Date:** {row['Project End Date']}")
-        c1.write(f"**Closure Date:** {row['Closure Date']}")
+        c1.write(f"**Submission Date:** {fmt_date(row['Submission Date'])}")
+        c1.write(f"**Project Start Date:** {fmt_date(row['Project Start Date'])}")
+        c1.write(f"**Project End Date:** {fmt_date(row['Project End Date'])}")
+        c1.write(f"**Closure Date:** {fmt_date(row['Closure Date'])}")
         c2.write(f"**Amount Requested:** PKR {row['Amount Requested']:,.0f}")
         approved = row['Amount Approved']
         c2.write(f"**Amount Approved:** {'PKR ' + format(approved, ',.0f') if pd.notna(approved) else '—'}")
